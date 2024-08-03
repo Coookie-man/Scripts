@@ -35,6 +35,20 @@ smallButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 smallButton.Font = Enum.Font.SourceSans
 smallButton.TextSize = 24
 
+local changeClickPosButton = Instance.new("TextButton")
+changeClickPosButton.Parent = ScreenGui
+changeClickPosButton.Size = UDim2.new(0, 100, 0, 50)
+changeClickPosButton.Position = UDim2.new(1, -110, 0, 260)
+changeClickPosButton.Text = "Set Click Pos"
+changeClickPosButton.BackgroundColor3 = Color3.fromRGB(50, 50, 200)
+changeClickPosButton.TextColor3 = Color3.fromRGB(220, 220, 220)
+changeClickPosButton.Font = Enum.Font.SourceSans
+changeClickPosButton.TextSize = 24
+
+local uiCornerChangePos = Instance.new("UICorner")
+uiCornerChangePos.CornerRadius = UDim.new(0, 10)
+uiCornerChangePos.Parent = changeClickPosButton
+
 local function tweenButton(button, position)
     local tweenInfo = TweenInfo.new(
         0.5,
@@ -57,10 +71,14 @@ end
 
 local isClosed = false
 local isScriptActive = false
+local isSettingClickPos = false
+local clickX, clickY = 580, 350
 local openPosition = UDim2.new(1, -110, 0, 200)
-local closedPosition = UDim2.new(1, -0, 0, 200)
+local closedPosition = UDim2.new(1, 1, 0, 200)
 local openPosition1 = UDim2.new(1, -140, 0, 210)
 local closedPosition1 = UDim2.new(1, -40, 0, 210)
+local openPosition2 = UDim2.new(1, -110, 0, 260)
+local closedPosition2 = UDim2.new(1, 1, 0, 260)
 local timeElapsed = 0
 local checkInterval = 0.01
 
@@ -89,10 +107,10 @@ local function checkFramesPosition()
     local frame1X = frame1.AbsolutePosition.X
     local frame2X = frame2.AbsolutePosition.X
     local minRange = frame2X
-    local maxRange = frame2X + 20
+    local maxRange = frame2X + 10
     
     if frame1X >= minRange and frame1X <= maxRange then
-        clickAt(580, 350)
+        clickAt(clickX, clickY)
     end
 end
 
@@ -100,10 +118,12 @@ smallButton.MouseButton1Click:Connect(function()
     if isClosed then
         tweenButton(toggleButton, openPosition)
         tweenButton(smallButton, openPosition1)
+        tweenButton(changeClickPosButton, openPosition2)
         smallButton.Text = ">"
     else
         tweenButton(toggleButton, closedPosition)
         tweenButton(smallButton, closedPosition1)
+        tweenButton(changeClickPosButton, closedPosition2)
         smallButton.Text = "<"
     end
     isClosed = not isClosed
@@ -115,6 +135,22 @@ toggleButton.MouseButton1Click:Connect(function()
         toggleButton.BackgroundColor3 = Color3.fromRGB(120, 200, 120)
     else
         toggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    end
+end)
+
+changeClickPosButton.MouseButton1Click:Connect(function()
+    isSettingClickPos = true
+    changeClickPosButton.Text = "Click a Position"
+end)
+
+userInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if isSettingClickPos and not gameProcessedEvent then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            local mousePos = userInputService:GetMouseLocation()
+            clickX, clickY = mousePos.X, mousePos.Y
+            isSettingClickPos = false
+            changeClickPosButton.Text = "Set Click Pos"
+        end
     end
 end)
 
