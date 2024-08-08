@@ -1,6 +1,8 @@
 -- Wait for the game to load
 wait()
 
+local RunService = game:GetService("RunService")
+
 -- Get the first model in the CurrentRoom folder in the Workspace
 local currentFloor = workspace:FindFirstChild("CurrentRoom") and workspace.CurrentRoom:FindFirstChildWhichIsA("Model")
 
@@ -20,17 +22,18 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Table to keep track of which monsters are toggled
+-- Table to keep track of which monsters are toggled and their connections
 local toggledMonsters = {}
 
 -- Function to toggle the looping movement of the monster
 local function toggleMonsterMovement(monster)
     if toggledMonsters[monster] then
-        toggledMonsters[monster] = nil  -- Stop the movement
+        -- Disconnect the movement function to stop the movement
+        toggledMonsters[monster]:Disconnect()
+        toggledMonsters[monster] = nil
     else
-        toggledMonsters[monster] = true  -- Start the movement
-        -- Start moving the monster
-        while toggledMonsters[monster] do
+        -- Start moving the monster by connecting to the RenderStepped event
+        toggledMonsters[monster] = RunService.RenderStepped:Connect(function()
             if monster:FindFirstChild("PrimaryPart") then
                 monster:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
             else
@@ -40,8 +43,7 @@ local function toggleMonsterMovement(monster)
                     end
                 end
             end
-            wait(0.0000001)  -- Wait before moving again (adjust speed as needed)
-        end
+        end)
     end
 end
 
