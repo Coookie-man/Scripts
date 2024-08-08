@@ -10,7 +10,7 @@ if currentFloor and currentFloor:IsA("Folder") then
     
     if firstModel then
         -- Find the folder named "monsters" within the first model
-        local monstersFolder = firstfolder:FindFirstChild("monsters")
+        local monstersFolder = firstModel:FindFirstChild("monsters")
         
         if monstersFolder and monstersFolder:IsA("Folder") then
             -- Create a ScreenGui for the GUI
