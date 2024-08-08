@@ -2,52 +2,47 @@
 wait()
 
 -- Get the first model in the CurrentRoom folder in the Workspace
-local firstModel = workspace:FindFirstChild("CurrentRoom") and workspace.CurrentRoom:FindFirstChildWhichIsA("Model")
+local currentFloor = workspace:FindFirstChild("CurrentRoom") and workspace.CurrentRoom:FindFirstChildWhichIsA("Model")
 
-if firstModel then
-    -- Find the folder named "monsters" within the first model
-    local monstersFolder = firstModel:FindFirstChild("monsters")
-    
-    if monstersFolder and monstersFolder:IsA("Folder") then
-        -- Create a ScreenGui for the GUI
-        local screenGui = Instance.new("ScreenGui")
-        screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-        
-        -- Iterate through the models inside the monsters folder
-        for _, monster in pairs(monstersFolder:GetChildren()) do
-            if monster:IsA("Model") then
-                -- Create a TextButton for each monster
-                local button = Instance.new("TextButton")
-                button.Size = UDim2.new(0, 200, 0, 50)
-                button.Position = UDim2.new(1, -210, 0, 50 * _)
-                button.Text = monster.Name
-                button.Parent = screenGui
-                
-                -- Connect the button click event
-                button.MouseButton1Click:Connect(function()
-                    -- Set the monster's position to (0, 0, 0)
-                    if monster:FindFirstChild("PrimaryPart") then
-                        monster:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
-                    else
-                        -- If the model doesn't have a PrimaryPart, move all parts to (0, 0, 0)
-                        for _, part in pairs(monster:GetDescendants()) do
-                            if part:IsA("BasePart") then
-                                part.CFrame = CFrame.new(0, 0, 0)
-                            end
-                        end
-                    end
-                end)
-            end
-        end
-    else
-        warn("Monsters folder not found in the first model of CurrentRoom.")
-    end
-else
-    warn("No models found in CurrentRoom.")
+if not currentFloor then
+    warn("No model found in CurrentRoom")
+    return
 end
 
-        warn("No models found in CurrentFloor.")
+-- Find the folder named "Monsters" within the currentFloor model
+local monstersFolder = currentFloor:FindFirstChild("Monsters")
+if not monstersFolder then
+    warn("No monsters folder found in the current floor")
+    return
+end
+
+-- Create a ScreenGui for the GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Iterate through the models inside the monsters folder
+for _, monster in pairs(monstersFolder:GetChildren()) do
+    if monster:IsA("Model") then
+        -- Create a TextButton for each monster
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0, 200, 0, 50)
+        button.Position = UDim2.new(1, -210, 0, 50 * _)
+        button.Text = monster.Name
+        button.Parent = screenGui
+        
+        -- Connect the button click event
+        button.MouseButton1Click:Connect(function()
+            -- Set the monster's position to (0, 0, 0)
+            if monster:FindFirstChild("PrimaryPart") then
+                monster:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+            else
+                -- If the model doesn't have a PrimaryPart, move all parts to (0, 0, 0)
+                for _, part in pairs(monster:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CFrame = CFrame.new(0, 0, 0)
+                    end
+                end
+            end
+        end)
     end
-else
-    warn("CurrentFloor folder not found in the Workspace.")
 end
