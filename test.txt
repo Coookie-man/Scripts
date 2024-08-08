@@ -1,18 +1,18 @@
 -- Wait for the game to load
 wait()
 
--- Get the CurrentFloor model in the Workspace
+-- Get the CurrentFloor folder in the Workspace
 local currentFloor = workspace:FindFirstChild("CurrentRoom")
 
-if currentFloor then
+if currentFloor and currentFloor:IsA("Folder") then
     -- Find the first model in CurrentFloor
     local firstModel = currentFloor:FindFirstChildWhichIsA("Model")
     
     if firstModel then
         -- Find the folder named "monsters" within the first model
-        local monstersFolder = firstFolder:FindFirstChild("monsters")
+        local monstersFolder = firstModel:FindFirstChild("monsters")
         
-        if monstersFolder then
+        if monstersFolder and monstersFolder:IsA("Folder") then
             -- Create a ScreenGui for the GUI
             local screenGui = Instance.new("ScreenGui")
             screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -50,5 +50,5 @@ if currentFloor then
         warn("No models found in CurrentFloor.")
     end
 else
-    warn("CurrentFloor not found in the Workspace.")
+    warn("CurrentFloor folder not found in the Workspace.")
 end
