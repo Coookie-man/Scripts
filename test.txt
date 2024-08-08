@@ -20,6 +20,31 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+-- Table to keep track of which monsters are toggled
+local toggledMonsters = {}
+
+-- Function to toggle the looping movement of the monster
+local function toggleMonsterMovement(monster)
+    if toggledMonsters[monster] then
+        toggledMonsters[monster] = nil  -- Stop the movement
+    else
+        toggledMonsters[monster] = true  -- Start the movement
+        -- Start moving the monster
+        while toggledMonsters[monster] do
+            if monster:FindFirstChild("PrimaryPart") then
+                monster:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+            else
+                for _, part in pairs(monster:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CFrame = CFrame.new(0, 0, 0)
+                    end
+                end
+            end
+            wait(0.1)  -- Wait before moving again (adjust speed as needed)
+        end
+    end
+end
+
 -- Iterate through the models inside the monsters folder
 for _, monster in pairs(monstersFolder:GetChildren()) do
     if monster:IsA("Model") then
@@ -27,22 +52,12 @@ for _, monster in pairs(monstersFolder:GetChildren()) do
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(0, 200, 0, 50)
         button.Position = UDim2.new(1, -210, 0, 50 * _)
-        button.Text = monster.Name
+        button.Text = "Toggle " .. monster.Name
         button.Parent = screenGui
         
         -- Connect the button click event
         button.MouseButton1Click:Connect(function()
-            -- Set the monster's position to (0, 0, 0)
-            if monster:FindFirstChild("PrimaryPart") then
-                monster:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
-            else
-                -- If the model doesn't have a PrimaryPart, move all parts to (0, 0, 0)
-                for _, part in pairs(monster:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CFrame = CFrame.new(0, 0, 0)
-                    end
-                end
-            end
+            toggleMonsterMovement(monster)
         end)
     end
 end
