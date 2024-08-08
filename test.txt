@@ -2,7 +2,7 @@
 wait()
 
 -- Get the CurrentFloor model in the Workspace
-local currentFloor = workspace:FindFirstChild("CurrentFloor")
+local currentFloor = workspace:FindFirstChild("CurrentRoom")
 
 if currentFloor then
     -- Find the first model in CurrentFloor
